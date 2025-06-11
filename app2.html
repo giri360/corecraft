@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCraft Projects | Premium Development Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #6c63ff;
+            --primary-dark: #564fd1;
+            --secondary: #ff6584;
+            --dark: #2f2e41;
+            --darker: #1e1e2c;
+            --light: #f8f9fa;
+            --lighter: #ffffff;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 3D Background Element */
+        #threejs-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(30, 30, 44, 0.9);
+            backdrop-filter: blur(10px);
+            transition: all 0.5s ease;
+        }
+
+        header.scrolled {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light);
+            z-index: 1001;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 200px 0 150px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, rgba(30,30,44,0) 70%);
+            z-index: -1;
+            animation: pulse 15s infinite alternate;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--light) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.3s forwards;
+        }
+
+        .hero p {
+            font-size: 22px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.5s forwards;
+        }
+
+        .hero-btns {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.7s forwards;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--light);
+            margin-left: 20px;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Services Section */
+        .section {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-title h2 {
+            font-size: 48px;
+            color: var(--light);
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 18px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.5s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: perspective(1000px) rotateY(0deg);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: perspective(1000px) rotateY(10deg) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .service-img {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .service-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s;
+        }
+
+        .service-card:hover .service-img img {
+            transform: scale(1.1);
+        }
+
+        .service-content {
+            padding: 25px;
+        }
+
+        .service-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .service-content p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 22px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .duration {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            background: linear-gradient(to bottom, var(--darker) 0%, #1a1a2e 100%);
+        }
+
+        .pricing-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 5px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+        }
+
+        .tab-btn.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .pricing-tables {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .pricing-tables.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.5s 0.2s forwards;
+        }
+
+        table:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        table caption {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--light);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        table caption::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        th, td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(108, 99, 255, 0.2);
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-primary {
+            background: rgba(108, 99, 255, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .badge-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        /* Demo Projects Section */
+        .demo-filter {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            margin: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.5s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .demo-card:hover {
+            transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .demo-video {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .demo-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .demo-info {
+            padding: 25px;
+        }
+
+        .demo-info h3 {
+            margin-bottom: 10px;
+            color: var(--light);
+            font-size: 20px;
+        }
+
+        .demo-id {
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .demo-desc {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+        }
+
+        .demo-tags {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .demo-tag {
+            padding: 6px 12px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 50px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            color: var(--primary);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(to bottom, #1a1a2e 0%, var(--darker) 100%);
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+        }
+
+        .contact-info h3 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: var(--light);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .contact-info h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .contact-details {
+            margin-bottom: 40px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 20px;
+            flex-shrink: 0;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .contact-text h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+
+        .contact-text p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .social-links {
+            display: flex;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 20px;
+            transition: all 0.3s;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .social-links a:hover {
+            background: var(--gradient);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+            border-color: transparent;
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: perspective(1000px) rotateY(0deg);
+            transition: all 0.5s;
+        }
+
+        .contact-form:hover {
+            transform: perspective(1000px) rotateY(-5deg);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a2e;
+            color: white;
+            padding: 80px 0 30px;
+            position: relative;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-col h3 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .footer-col p {
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+            list-style: none;
+            transition: all 0.3s;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 20px;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+            left: -5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* Floating Elements */
+        .floating {
+            position: absolute;
+            animation: floating 6s ease-in-out infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .shape-1 {
+            top: 20%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            filter: blur(30px);
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            top: 60%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: var(--secondary);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            filter: blur(40px);
+            animation-delay: 1s;
+        }
+
+        .shape-3 {
+            bottom: 10%;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            filter: blur(25px);
+            animation-delay: 2s;
+        }
+
+        /* Animations */
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 56px;
+            }
+            
+            .section-title h2 {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--darker);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 0;
+                transition: all 0.5s ease;
+                z-index: 1000;
+                box-shadow: 5px 0 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 20px 0;
+            }
+            
+            .mobile-menu {
+                display: block;
+                z-index: 1001;
+            }
+            
+            .hero {
+                padding: 150px 0 100px;
+            }
+            
+            .hero h1 {
+                font-size: 42px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+            
+            .section-title h2 {
+                font-size: 36px;
+            }
+            
+            .btn-outline {
+                margin-left: 0;
+                margin-top: 15px;
+                display: block;
+            }
+            
+            .pricing-tabs {
+                flex-direction: column;
+                border-radius: 15px;
+            }
+            
+            .tab-btn {
+                border-radius: 0;
+            }
+            
+            .tab-btn:first-child {
+                border-radius: 15px 15px 0 0;
+            }
+            
+            .tab-btn:last-child {
+                border-radius: 0 0 15px 15px;
+            }
+            
+            .contact-form {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .section-title h2 {
+                font-size: 32px;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background -->
+    <div id="threejs-bg"></div>
+    
+    <!-- Floating Elements -->
+    <div class="floating shape-1"></div>
+    <div class="floating shape-2"></div>
+    <div class="floating shape-3"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <div class="logo">CodeCraft</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#demos">Demos</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Transform Your Ideas Into Stunning Digital Solutions</h1>
+            <p>Professional portfolio websites, AI/ML projects, Python applications, and full-stack solutions delivered with speed and precision.</p>
+            <div class="hero-btns">
+                <a href="#pricing" class="btn">View Pricing</a>
+                <a href="#demos" class="btn btn-outline">Explore Demos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Services</h2>
+                <p>Comprehensive solutions tailored to your needs with documentation, hosting, and dedicated support.</p>
+            </div>
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-img">
+                        <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Portfolio Website">
+                    </div>
+                    <div class="service-content">
+                        <h3>Portfolio Website</h3>
+                        <p>Showcase your work with a stunning, responsive portfolio that highlights your skills and achievements.</p>
+                        <div class="service-meta">
+                            <span class="price">₹250-₹500</span>
+                            <span class="duration">5-10 days</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="service-card">
+                    <div class="service-img">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Python Project">
+                    </div>
+                    <div class="service-content">
+                        <h3>Python Project</h3>
+                        <p>Custom Python applications including GUI, data analysis, automation scripts with full documentation.</p>
+                        <div class="service-meta">
+                            <span class="price">₹2000-₹3000</span>
+                            <span class="duration">5-10 days</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-img">
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="AI/ML Project">
+                    </div>
+                    <div class="service-content">
+                        <h3>AI/ML Project</h3>
+                        <p>Advanced machine learning models and AI solutions with dataset, training, and deployment.</p>
+                        <div class="service-meta">
+                            <span class="price">₹3000-₹5000</span>
+                            <span class="duration">5-10 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Pricing Plans</h2>
+                <p>Transparent pricing with flexible options to suit your requirements and budget.</p>
+            </div>
+            
+            <div class="pricing-tabs">
+                <button class="tab-btn active" onclick="openPricingTab('solo')">Solo Services</button>
+                <button class="tab-btn" onclick="openPricingTab('combo')">Combo Packages</button>
+                <button class="tab-btn" onclick="openPricingTab('offers')">Special Offers</button>
+            </div>
+            
+            <!-- Solo Pricing Table -->
+            <div id="solo" class="pricing-tables active">
+                <table>
+                    <caption>✅ Solo Prices Min & Max</caption>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Delivery</th>
+                            <th>Minimum</th>
+                            <th>maximum</th>
+                            <th>Extras</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>Portfolio Website</td>
+                            <td>5–10 days</td>
+                            <td>₹250</td>
+                            <td>₹500</td>
+                            <td><span class="badge badge-primary">Free APK</span></td>
+                        </tr>
+<tr>
+                            <td>Project Report (PDF)</td>
+                            <td>2–5 days</td>
+                            <td>₹250</td>
+                            <td>₹500</td>
+                            <td><span class="badge badge-primary">Free in combos</span></td>
+                        </tr>
+<tr>
+                            <td>frontend Web App(local stroge)</td>
+                            <td>5–10 days</td>
+                            <td>₹1500</td>
+                            <td>₹2500</td>
+                            <td>
+                                <span class="badge badge-primary">APK</span>
+                                <span class="badge badge-success">Report</span>
+                            </td>
+                        </tr>
+<tr>
+                            <td>Full-Stack Web App(mini)</td>
+                            <td>5–10 days</td>
+                            <td>₹2000</td>
+                            <td>₹3000</td>
+                            <td>
+                                <span class="badge badge-primary">APK</span>
+                                <span class="badge badge-success">Report</span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Python Mini Project</td>
+                            <td>5–10 days</td>
+                            <td>₹2500</td>
+                            <td>₹3000</td>
+                            <td><span class="badge badge-primary">Free PDF Report</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI/ML Project</td>
+                            <td>5–10 days</td>
+                            <td>₹3000</td>
+                            <td>₹5000</td>
+                            <td>
+                                <span class="badge badge-primary">Portfolio</span>
+                                <span class="badge badge-success">Report</span>
+                                <span class="badge badge-warning">Demo</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Full-Stack Web App</td>
+                            <td>5–10 days</td>
+                            <td>₹4000</td>
+                            <td>₹5000</td>
+                            <td>
+                                <span class="badge badge-primary">APK</span>
+                                <span class="badge badge-success">Report</span>
+                            </td>
+                        </tr>
+
+                        
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Combo Pricing Table -->
+            <div id="combo" class="pricing-tables">
+                <table>
+                    <caption>🔗 Combo Packages – With & Without Hosting</caption>
+                    <thead>
+                        <tr>
+                            <th>Combo Package</th>
+                            <th>Delivery</th>
+                            <th>Without Hosting</th>
+                            <th>With Hosting</th>
+                            <th>Inclusions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Portfolio + APK</td>
+                            <td>5–7 days</td>
+                            <td>₹400</td>
+                            <td>₹600</td>
+                            <td><span class="badge badge-primary">Website + APK</span></td>
+                        </tr>
+                        <tr>
+                            <td>Python Project + Report</td>
+                            <td>7–10 days</td>
+                            <td>₹2500</td>
+                            <td>₹2700</td>
+                            <td><span class="badge badge-primary">Code</span> <span class="badge badge-success">PDF Report</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI/ML + Report + Demo</td>
+                            <td>10–15 days</td>
+                            <td>₹4300</td>
+                            <td>₹4500</td>
+                            <td>
+                                <span class="badge badge-primary">ML model</span>
+                                <span class="badge badge-success">PDF</span>
+                                <span class="badge badge-warning">Demo</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Full-Stack + APK + Portfolio</td>
+                            <td>15–20 days</td>
+                            <td>₹4600</td>
+                            <td>₹4800</td>
+                            <td>
+                                <span class="badge badge-primary">Web App</span>
+                                <span class="badge badge-success">Hosting</span>
+                                <span class="badge badge-warning">Portfolio</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Offers Table -->
+            <div id="offers" class="pricing-tables">
+                <table>
+                    <caption>🎁 Special Offers Recap</caption>
+                    <thead>
+                        <tr>
+                            <th>Offer</th>
+                            <th>Condition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Free Portfolio Website</td>
+                            <td>With orders above ₹3000</td>
+                        </tr>
+                        <tr>
+                            <td>Free Hosting</td>
+                            <td>With full-stack, AI, or combo packages</td>
+                        </tr>
+                        <tr>
+                            <td>Free APK Conversion</td>
+                            <td>On any hosted web project</td>
+                        </tr>
+                        <tr>
+                            <td>Free PDF Report</td>
+                            <td>With AI/Python projects or combos</td>
+                        </tr>
+                        <tr>
+                            <td>Free Demo Video</td>
+                            <td>With AI Projects > ₹4000</td>
+                        </tr>
+                        <tr>
+                            <td>Refer a Friend = ₹200 OFF</td>
+                            <td>Valid for both referrer and new client</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+<!-- Demo Projects Section -->
+<section class="section" id="demos">
+    <div class="container">
+        <div class="section-title">
+            <h2>Project Demos</h2>
+            <p>Explore our completed projects with demo videos and detailed descriptions.</p>
+        </div>
+
+        <div class="demo-filter">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="portfolio">Portfolio</button>
+            <button class="filter-btn" data-filter="python">Python</button>
+            <button class="filter-btn" data-filter="ai">AI/ML</button>
+            <button class="filter-btn" data-filter="web">Web App</button>
+        </div>
+
+        <div class="demo-grid">
+
+            <!-- Demo 1: Portfolio -->
+            <div class="demo-card" data-category="portfolio">
+                <div class="demo-video">
+                    <iframe src="https://www.youtube.com/embed/73hPoQ4l6E8" frameborder="0" 
+                        allowfullscreen 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                    </iframe>
+                </div>
+                <div class="demo-info">
+                    <h3>Professional Portfolio Website (₹200–₹250)</h3>
+                    <div class="demo-id">ID: PORT-001</div>
+                    <p class="demo-desc">Clean, responsive portfolio with about section, project gallery, and contact form.</p>
+                    <div class="demo-tags">
+                        <span class="demo-tag">HTML/CSS</span>
+                        <span class="demo-tag">JavaScript</span>
+                        <span class="demo-tag">Responsive</span>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Demo 2: Portfolio Project -->
+<div class="demo-card" data-category="portfolio">
+    <div class="demo-video">
+        <iframe src="https://www.youtube.com/embed/D8Iuk1Gn5Rs" frameborder="0" 
+            allowfullscreen 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+    </div>
+    <div class="demo-info">
+        <h3>Professional Portfolio Website (₹250–₹300)</h3>
+        <div class="demo-id">ID: PORT-002</div>
+        <p class="demo-desc">Fully animated, clean, responsive portfolio with an About section, project gallery, and contact form.</p>
+        <div class="demo-tags">
+            <span class="demo-tag">HTML/CSS</span>
+            <span class="demo-tag">JavaScript</span>
+            <span class="demo-tag">Responsive</span>
+        </div>
+    </div>
+</div>
+            <!-- Demo 3: Portfolio -->
+<div class="demo-card" data-category="portfolio">
+    <div class="demo-video">
+        <iframe src="https://www.youtube.com/embed/Zbu6DvOcmrc" frameborder="0" 
+            allowfullscreen 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+    </div>
+    <div class="demo-info">
+        <h3>Creative Portfolio Website (₹250–₹300)</h3>
+        <div class="demo-id">ID: PORT-003</div>
+        <p class="demo-desc">Modern animated portfolio website with interactive sections for About, Projects, and Contact — perfect for developers and designers.</p>
+        <div class="demo-tags">
+            <span class="demo-tag">HTML</span>
+            <span class="demo-tag">CSS</span>
+            <span class="demo-tag">JavaScript</span>
+            <span class="demo-tag">Animation</span>
+        </div>
+    </div>
+</div>
+
+           <!-- Demo 4: AI/ML -->
+<div class="demo-card" data-category="ai">
+    <div class="demo-video">
+        <iframe src="https://www.youtube.com/embed/zR1XcqPobd8?si=WUDUUKrtdY6r9tT7" frameborder="0" 
+            allowfullscreen 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+    </div>
+    <div class="demo-info">
+        <h3>Resume Analyzer(₹2500 - ₹3500)</h3>
+        <div class="demo-id">ID: AI-010</div>
+        <p class="demo-desc">
+            An AI-powered tool that extracts key skills from a resume, asks the user for their target job role, and identifies the additional skills needed to match that role. Perfect for job seekers and career switchers.
+        </p>
+        <div class="demo-tags">
+            <span class="demo-tag">Python</span>
+            <span class="demo-tag">NLP</span>
+            <span class="demo-tag">Render</span>
+        </div>
+    </div>
+</div>
+
+                <!-- Demo 5: Python Weather App -->
+                <div class="demo-card" data-category="python">
+                    <div class="demo-video">
+                        <iframe src="https://www.youtube.com/embed/REPLACE_VIDEO_ID_4" frameborder="0" 
+                            allowfullscreen 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                        </iframe>
+                    </div>
+                    <div class="demo-info">
+                        <h3>Weather App</h3>
+                        <div class="demo-id">ID: PY-008</div>
+                        <p class="demo-desc">Python application that fetches and displays weather data from API with GUI interface.</p>
+                        <div class="demo-tags">
+                            <span class="demo-tag">Python</span>
+                            <span class="demo-tag">API</span>
+                            <span class="demo-tag">PyQt</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo 6: AI Image Classifier -->
+                <div class="demo-card" data-category="ai">
+                    <div class="demo-video">
+                        <iframe src="https://www.youtube.com/embed/REPLACE_VIDEO_ID_5" frameborder="0" 
+                            allowfullscreen 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                        </iframe>
+                    </div>
+                    <div class="demo-info">
+                        <h3>Image Classifier</h3>
+                        <div class="demo-id">ID: AI-009</div>
+                        <p class="demo-desc">Deep learning model that classifies images into 10 categories with TensorFlow.</p>
+                        <div class="demo-tags">
+                            <span class="demo-tag">Python</span>
+                            <span class="demo-tag">TensorFlow</span>
+                            <span class="demo-tag">CNN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Contact Section -->
+<section class="section bg-light" id="contact">
+    <div class="container">
+        <div class="section-title">
+            <h2>Get In Touch</h2>
+            <p>Have a project in mind? Contact us for a quote or any questions.</p>
+        </div>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Contact Details</h3>
+                
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Location</h4>
+                            <p>Bangalore, India</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Email</h4>
+                            <p><a href="mailto:gvprojects8@gmail.com">gvprojects8@gmail.com</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-telegram-plane"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Telegram</h4>
+                            <p><a href="https://t.me/gvprojects8" target="_blank">@gvprojects8</a></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="https://youtube.com/@gvprojects?si=NKFzpIad_to8PKW9" target="_blank" title="YouTube Channel">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="mailto:gvprojects8@gmail.com" title="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="https://t.me/gvprojects8" target="_blank" title="Telegram">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-col">
+                    <h3>CodeCraft</h3>
+                    <p>Transforming ideas into digital reality with cutting-edge solutions and exceptional service.</p>
+                    <p>Fast delivery, quality code, and comprehensive documentation.</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Portfolio Websites</a></li>
+                        <li><a href="#">Python Projects</a></li>
+                        <li><a href="#">AI/ML Solutions</a></li>
+                        <li><a href="#">Full-Stack Apps</a></li>
+                        <li><a href="#">Project Reports</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#demos">Demos</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 CodeCraft. All Rights Reserved. | Designed with <i class="fas fa-heart" style="color: var(--secondary);"></i> by CodeCraft Team</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Header Scroll Effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if(window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if(navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Pricing Tab Switching
+        function openPricingTab(tabName) {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.pricing-tables');
+            
+            tabBtns.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Demo Project Filtering
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-filter');
+                const demoCards = document.querySelectorAll('.demo-card');
+                
+                demoCards.forEach(card => {
+                    if(filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Form Submission with Formspree
+        const contactForm = document.getElementById('contactForm');
+        
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(contactForm);
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            
+            // Change button text and disable it
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if(response.ok) {
+                    // Show success message
+                    alert('Thank you! Your message has been sent successfully. We will contact you soon.');
+                    contactForm.reset();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                // Show error message
+                alert('Oops! There was a problem sending your message. Please try again later.');
+                console.error('Error:', error);
+            } finally {
+                // Reset button text and enable it
+                submitBtn.innerHTML = 'Send Message';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // 3D Background with Three.js
+        function initThreeJS() {
+            const container = document.getElementById('threejs-bg');
+            if(!container) return;
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particleCount = 1000;
+            
+            const posArray = new Float32Array(particleCount * 3);
+            
+            for(let i = 0; i < particleCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x6c63ff,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            camera.position.z = 3;
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.x += 0.0005;
+                particlesMesh.rotation.y += 0.0005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Initialize 3D background when page loads
+        window.addEventListener('load', initThreeJS);
+        
+        // Scroll animations
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.service-card, .demo-card, .contact-form, table');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+                
+                if(elementPosition < screenPosition) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    </script>
+</body>
+</html>
